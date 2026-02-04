@@ -1,6 +1,6 @@
 {
   "name": "open-event-sdk",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Open Event SDK for Node.js - WebSocket-based event subscription",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

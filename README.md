@@ -257,13 +257,13 @@ interface Event {
 
 ```typescript
 // 监听退出信号
-process.on('SIGINT', async () => {
-  await client.stop();
+process.on('SIGINT', () => {
+  client.stop();
   process.exit(0);
 });
 
-process.on('SIGTERM', async () => {
-  await client.stop();
+process.on('SIGTERM', () => {
+  client.stop();
   process.exit(0);
 });
 
