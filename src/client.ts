@@ -262,15 +262,22 @@ export class Client {
    * 断开连接
    */
   private disconnect(): void {
+    this.cleanupConnection();
+    if (this.state.connectionState !== ConnectionState.Closed) {
+      this.state.connectionState = ConnectionState.Disconnected;
+    }
+    this.logger.info('Disconnected');
+  }
+
+  /**
+   * 清理 WebSocket 连接（不改变状态）
+   */
+  private cleanupConnection(): void {
     this.clearPongTimeout();
     if (this.ws) {
       this.ws.terminate();
       this.ws = null;
     }
-    if (this.state.connectionState !== ConnectionState.Closed) {
-      this.state.connectionState = ConnectionState.Disconnected;
-    }
-    this.logger.info('Disconnected');
   }
 
   /**
@@ -315,7 +322,8 @@ export class Client {
         }
 
         this.logger.error('Reconnect failed:', error instanceof Error ? error.message : error);
-        this.disconnect();
+        // 只清理 WebSocket 连接，不改变状态（保持 Reconnecting 以继续重试循环）
+        this.cleanupConnection();
       }
     }
   }
