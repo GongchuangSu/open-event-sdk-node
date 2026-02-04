@@ -1,113 +1,56 @@
 /**
  * Dispatcher 示例 - 按事件编码分发处理
+ * 
+ * 运行方式：
+ * cd examples
+ * pnpm install
+ * APP_ID=your_app_id APP_SECRET=your_app_secret pnpm run dispatcher
  */
 
-import { Client, Dispatcher, LogLevel } from '../../src';
+import { Client, Dispatcher, LogLevel } from 'open-event-sdk';
 
-// 从环境变量获取配置
-const appId = process.env.APP_ID ?? '';
-const appSecret = process.env.APP_SECRET ?? '';
+const appId = process.env.APP_ID;
+const appSecret = process.env.APP_SECRET;
 
 if (!appId || !appSecret) {
-  console.error('请设置环境变量 APP_ID 和 APP_SECRET');
+  console.error('请设置 APP_ID 和 APP_SECRET 环境变量');
   process.exit(1);
 }
 
-// 创建分发器
 const dispatcher = new Dispatcher()
-  // ========== 方式一: OnV7XXX 方法（类型安全，推荐） ==========
+  // 注册消息处理
   .onV7AppChatMessageCreate((event) => {
     const { chat, sender, message } = event.parsedData;
-    console.log('='.repeat(50));
-    console.log('[消息事件]');
-    console.log(`  会话ID: ${chat.id}`);
-    console.log(`  发送者: ${sender.id} (${sender.type})`);
-    console.log(`  消息ID: ${message.id}`);
-    console.log(`  消息类型: ${message.type}`);
-    console.log(`  消息内容: ${JSON.stringify(message.content)}`);
-    console.log('='.repeat(50));
+    console.log(`[消息] 会话=${chat.id}, 发送者=${sender.id}, 内容=${JSON.stringify(message.content)}`);
+    // TODO: 实现业务逻辑
   })
-  .onV7AppChatCreate((event) => {
-    const { chat_id, creator, company_id } = event.parsedData;
-    console.log('='.repeat(50));
-    console.log('[会话创建事件]');
-    console.log(`  会话ID: ${chat_id}`);
-    console.log(`  创建者: ${creator.id} (${creator.type})`);
-    console.log(`  企业ID: ${company_id}`);
-    console.log('='.repeat(50));
+  // 注册机器人进群处理
+  .onV7AppGroupChatMemberRobotCreate((event) => {
+    console.log(`[进群] 群聊=${event.parsedData.chat_id}`);
+    // TODO: 发送欢迎消息
   })
-  .onV7AppGroupChatMemberUserCreate((event) => {
-    const { chat_id, operator, users } = event.parsedData;
-    console.log('='.repeat(50));
-    console.log('[用户进群事件]');
-    console.log(`  会话ID: ${chat_id}`);
-    console.log(`  操作者: ${operator.id}`);
-    console.log(`  进群用户: ${users.map((u) => u.id).join(', ')}`);
-    console.log('='.repeat(50));
-  })
-  .onV7AppGroupChatMemberUserDelete((event) => {
-    const { chat_id, operator, users } = event.parsedData;
-    console.log('='.repeat(50));
-    console.log('[用户退群事件]');
-    console.log(`  会话ID: ${chat_id}`);
-    console.log(`  操作者: ${operator.id}`);
-    console.log(`  退群用户: ${users.map((u) => u.id).join(', ')}`);
-    console.log('='.repeat(50));
-  })
-  .onV7AppGroupChatDelete((event) => {
-    const { chat_id, operator } = event.parsedData;
-    console.log('='.repeat(50));
-    console.log('[群聊解散事件]');
-    console.log(`  会话ID: ${chat_id}`);
-    console.log(`  操作者: ${operator.id}`);
-    console.log('='.repeat(50));
-  })
-
-  // ========== 方式二: RegisterFunc（处理其他事件，需自行解析 Data） ==========
-  .registerFunc('kso.user.status.update', (event) => {
-    console.log('='.repeat(50));
-    console.log('[用户状态变更事件]');
-    console.log(`  事件编码: ${event.eventCode}`);
-    console.log(`  数据: ${event.data}`);
-    console.log('='.repeat(50));
-  })
-
-  // ========== 兜底处理器 ==========
+  // 兜底处理
   .registerFallbackFunc((event) => {
-    console.log('='.repeat(50));
-    console.log('[未处理的事件]');
-    console.log(`  事件编码: ${event.eventCode}`);
-    console.log(`  Topic: ${event.topic}`);
-    console.log(`  Operation: ${event.operation}`);
-    console.log(`  数据: ${event.data}`);
-    console.log('='.repeat(50));
+    console.log(`[其他] 事件=${event.eventCode}`);
   });
 
-// 创建客户端
 const client = new Client({
   appId,
   appSecret,
-  logLevel: LogLevel.Info,
   dispatcher,
+  logLevel: LogLevel.Info,
+  reconnectMaxRetry: -1, // 无限重试
 });
 
 // 优雅关闭
-process.on('SIGINT', () => {
-  console.log('\n正在关闭...');
-  client.stop();
+const shutdown = async () => {
+  console.log('正在关闭...');
+  await client.stop();
   process.exit(0);
-});
+};
 
-process.on('SIGTERM', () => {
-  console.log('\n正在关闭...');
-  client.stop();
-  process.exit(0);
-});
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
 
-// 启动客户端
-console.log('启动客户端...');
-console.log(`已注册的事件: ${dispatcher.getEventCodes().join(', ')}`);
-client.start().catch((error) => {
-  console.error('客户端错误:', error);
-  process.exit(1);
-});
+console.log('启动事件订阅服务...');
+await client.start();

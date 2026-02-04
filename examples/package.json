@@ -1,0 +1,17 @@
+{
+  "name": "open-event-sdk-examples",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Open Event SDK 使用示例",
+  "type": "module",
+  "scripts": {
+    "simple": "tsx simple/index.ts",
+    "dispatcher": "tsx dispatcher/index.ts"
+  },
+  "dependencies": {
+    "open-event-sdk": "latest"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0"
+  }
+}

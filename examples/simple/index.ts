@@ -2,7 +2,7 @@
  * 简单示例 - 使用单一 Handler 处理所有事件
  */
 
-import { Client, LogLevel } from '../../src';
+import { Client, LogLevel } from 'open-event-sdk';
 
 // 从环境变量获取配置
 const appId = process.env.APP_ID ?? '';
