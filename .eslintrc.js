@@ -41,5 +41,5 @@ module.exports = {
     // Prettier 规则
     'prettier/prettier': 'error',
   },
-  ignorePatterns: ['dist', 'node_modules', '*.js', '*.mjs', '*.cjs'],
+  ignorePatterns: ['dist', 'node_modules', 'examples', 'tests', '*.js', '*.mjs', '*.cjs'],
 };

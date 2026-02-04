@@ -159,7 +159,7 @@ export class Client {
   /**
    * 停止 WebSocket 连接
    */
-  async stop(): Promise<void> {
+  stop(): void {
     this.state.connectionState = ConnectionState.Closed;
     this.abortController?.abort();
     this.disconnect();
@@ -235,8 +235,8 @@ export class Client {
       });
 
       // 设置消息处理
-      ws.on('message', (data) => {
-        this.handleMessage(data.toString());
+      ws.on('message', (data: Buffer) => {
+        this.handleMessage(data.toString('utf-8'));
       });
 
       // 设置 Ping 处理（服务端发送 Ping，客户端回复 Pong）
@@ -280,7 +280,8 @@ export class Client {
     this.state.connectionState = ConnectionState.Reconnecting;
     this.state.retryCount = 0;
 
-    while (true) {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    while (this.state.connectionState === ConnectionState.Reconnecting) {
       // 检查是否应该继续重连
       this.state.retryCount++;
       if (!shouldReconnect(this.reconnectConfig, this.state.retryCount)) {
@@ -382,19 +383,14 @@ export class Client {
 
       // 事件消息需要验证 topic 和 operation 不能为空
       if (!base.topic || !base.operation) {
-        this.logger.error(
-          `Invalid event message: topic or operation is empty, message=${message}`
-        );
+        this.logger.error(`Invalid event message: topic or operation is empty, message=${message}`);
         return;
       }
 
       // 处理事件消息
-      this.handleEventMessage(message);
+      void this.handleEventMessage(message);
     } catch (error) {
-      this.logger.error(
-        'Handle message failed:',
-        error instanceof Error ? error.message : error
-      );
+      this.logger.error('Handle message failed:', error instanceof Error ? error.message : error);
     }
   }
 

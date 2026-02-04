@@ -92,15 +92,15 @@ const client = new Client({
 });
 
 // 优雅关闭
-process.on('SIGINT', async () => {
+process.on('SIGINT', () => {
   console.log('\n正在关闭...');
-  await client.stop();
+  client.stop();
   process.exit(0);
 });
 
-process.on('SIGTERM', async () => {
+process.on('SIGTERM', () => {
   console.log('\n正在关闭...');
-  await client.stop();
+  client.stop();
   process.exit(0);
 });
 

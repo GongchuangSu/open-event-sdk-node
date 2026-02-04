@@ -164,12 +164,7 @@ describe('Dispatcher', () => {
         },
       };
 
-      const event = createEvent(
-        'kso.app_chat.message',
-        'create',
-        1704067200,
-        JSON.stringify(eventData)
-      );
+      const event = createEvent('kso.app_chat.message', 'create', 1704067200, JSON.stringify(eventData));
 
       await dispatcher.handle(event);
 

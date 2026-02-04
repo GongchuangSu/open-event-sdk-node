@@ -113,9 +113,7 @@ export class Dispatcher implements Handler {
    * 注册用户给应用发送消息事件处理器
    * 事件编码: kso.app_chat.message.create
    */
-  onV7AppChatMessageCreate(
-    fn: TypedHandlerFunc<V7NotificationAppChatMessageCreateData>
-  ): this {
+  onV7AppChatMessageCreate(fn: TypedHandlerFunc<V7NotificationAppChatMessageCreateData>): this {
     return this.registerFunc(EventCodes.V7_APP_CHAT_MESSAGE_CREATE, (event) => {
       const parsedData = JSON.parse(event.data) as V7NotificationAppChatMessageCreateData;
       const typedEvent = createTypedEvent(event, parsedData);
