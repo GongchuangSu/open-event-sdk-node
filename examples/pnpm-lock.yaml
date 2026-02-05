@@ -10,7 +10,7 @@ importers:
     dependencies:
       open-event-sdk:
         specifier: latest
-        version: 1.0.0
+        version: 1.0.1
     devDependencies:
       tsx:
         specifier: ^4.7.0
@@ -187,8 +187,8 @@ packages:
   get-tsconfig@4.13.1:
     resolution: {integrity: sha512-EoY1N2xCn44xU6750Sx7OjOIT59FkmstNc3X6y5xpz7D5cBtZRe/3pSlTkDJgqsOk3WwZPkWfonhhUJfttQo3w==}
 
-  open-event-sdk@1.0.0:
-    resolution: {integrity: sha512-9gSVuzB0eRIZvrtuPDJrC9QycHcXudDDFY/3Bt42viVzC0dHaC8r2jvr8lS/CzcbSgCk7aZWEUx3cCVujPvAXw==}
+  open-event-sdk@1.0.1:
+    resolution: {integrity: sha512-XzU9VYUPjTaf+feOrc8YGAkhEaxrwDxfeC4Wut9zJsmIuRlQ0kB/WAMHZJO/xsWas3hiLU5tMj4UZRDzlFxYgA==}
     engines: {node: '>=18'}
 
   resolve-pkg-maps@1.0.0:
@@ -327,7 +327,7 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
-  open-event-sdk@1.0.0:
+  open-event-sdk@1.0.1:
     dependencies:
       ws: 8.19.0
     transitivePeerDependencies:
